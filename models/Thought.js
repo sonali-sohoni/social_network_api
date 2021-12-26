@@ -39,7 +39,7 @@ const ThoughtSchema = new Schema(
 				"thoughtText length needs to be between 1 and 280 charcters",
 			],
 			maxlength: [
-				1,
+				280,
 				"thoughtText length needs to be between 1 and 280 charcters",
 			],
 			required: "Please enter the valid thoughtText",
