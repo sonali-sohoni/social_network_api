@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const { param } = require("../routes");
+const Thought = require("../models/Thought");
 const userController = {
 	getAllUsers(req, res) {
 		User.find({})
@@ -24,6 +26,17 @@ const userController = {
 
 	getUserById({ params }, res) {
 		User.findOne({ _id: params.id })
+			.populate({
+				path: "thoughts",
+
+				select: "-__v",
+			})
+			.populate({
+				path: "friends",
+
+				select: "-__v",
+			})
+			.select("-__v")
 			.then((dbResult) => {
 				if (!dbResult) {
 					res.status(404).json({ message: "requested user not found" });
@@ -61,18 +74,28 @@ const userController = {
 	},
 
 	deleteUser({ params }, res) {
-		User.findOneAndDelete({ _id: params.id })
-			.then((dbResult) => {
-				if (!dbResult) {
-					res.status(404).json({ message: "requested user not found" });
-					return;
-				}
-				res.json(dbResult);
-			})
-			.catch((err) => {
-				console.log(err);
-				res.status(400).json(err);
+		User.findOne({ _id: params.id }).then((dbResult) => {
+			const thoughts = dbResult.thoughts;
+			thoughts.forEach((element) => {
+				Thought.findOneAndDelete({ _id: element }).then((result) => {
+					console.log(result);
+				});
 			});
+			res.json(dbResult);
+		});
+
+		// User.findOneAndDelete({ _id: params.id })
+		// 	.then((dbResult) => {
+		// 		if (!dbResult) {
+		// 			res.status(404).json({ message: "requested user not found" });
+		// 			return;
+		// 		}
+		// 		res.json(dbResult);
+		// 	})
+		// 	.catch((err) => {
+		// 		console.log(err);
+		// 		res.status(400).json(err);
+		// 	});
 	},
 
 	///:userId/friends/:friendId

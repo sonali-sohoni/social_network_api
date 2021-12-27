@@ -10,7 +10,7 @@ const {
 } = require("../../controllers/thought-controller");
 
 router.route("/").get(getAllThoughts).post(createNewThought);
-router.route("/:id").put(updateThought);
+router.route("/:id").get(getThoughtById).put(updateThought);
 router.route("/:userId/:thoughtId").delete(deleteThought);
 
 router.route("/:userId/:thoughtId").post(addReaction);
