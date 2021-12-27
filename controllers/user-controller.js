@@ -74,28 +74,30 @@ const userController = {
 	},
 
 	deleteUser({ params }, res) {
-		User.findOne({ _id: params.id }).then((dbResult) => {
-			const thoughts = dbResult.thoughts;
-			thoughts.forEach((element) => {
-				Thought.findOneAndDelete({ _id: element }).then((result) => {
-					console.log(result);
+		return User.findOne({ _id: params.id })
+			.then((dbResult) => {
+				const thoughts = dbResult.thoughts;
+				thoughts.forEach((element) => {
+					Thought.findOneAndDelete({ _id: element }).then((result) => {
+						console.log(result);
+					});
 				});
+				return dbResult;
+			})
+			.then((dbResult) => {
+				User.findOneAndDelete({ _id: params.id })
+					.then((dbResult) => {
+						if (!dbResult) {
+							res.status(404).json({ message: "requested user not found" });
+							return;
+						}
+						res.json(dbResult);
+					})
+					.catch((err) => {
+						console.log(err);
+						res.status(400).json(err);
+					});
 			});
-			res.json(dbResult);
-		});
-
-		// User.findOneAndDelete({ _id: params.id })
-		// 	.then((dbResult) => {
-		// 		if (!dbResult) {
-		// 			res.status(404).json({ message: "requested user not found" });
-		// 			return;
-		// 		}
-		// 		res.json(dbResult);
-		// 	})
-		// 	.catch((err) => {
-		// 		console.log(err);
-		// 		res.status(400).json(err);
-		// 	});
 	},
 
 	///:userId/friends/:friendId

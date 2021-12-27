@@ -49,7 +49,7 @@ const thoughtController = {
 		Thought.findOne({ _id: params.id })
 			.then((dbResult) => {
 				if (!dbResult) {
-					res.status(404).json({ message: "requested user not found" });
+					res.status(404).json({ message: "requested thought id not found" });
 					return;
 				}
 				res.json(dbResult);
